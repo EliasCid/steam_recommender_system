@@ -1,0 +1,23 @@
+[project]
+name = "steam-recommender-system"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "bs4>=0.0.2",
+    "cornac>=2.3.3",
+    "dotenv>=0.9.9",
+    "matplotlib>=3.10.3",
+    "mlflow>=3.1.0",
+    "numpy>=2.3.1",
+    "pandas>=2.3.0",
+    "pyarrow>=20.0.0",
+    "pyspark>=4.0.0",
+    "requests>=2.32.4",
+    "scikit-learn>=1.7.0",
+    "scikit-surprise>=1.1.4",
+    "seaborn>=0.13.2",
+    "torch>=2.7.1",
+    "tqdm>=4.67.1",
+]

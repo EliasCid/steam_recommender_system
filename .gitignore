@@ -1,0 +1,9 @@
+.env
+*.json
+*.parquet
+*.log
+*.csv
+*.pkl
+mlruns/
+mlartifacts/
+3.%20data_analysis/
