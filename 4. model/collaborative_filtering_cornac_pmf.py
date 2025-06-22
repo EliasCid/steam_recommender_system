@@ -11,7 +11,7 @@ from cornac.metrics import MAE, RMSE, Precision, Recall, NDCG, AUC, MAP
 from cornac.models.recommender import ScoreException
 
 mlflow.set_tracking_uri('http://127.0.0.1:5000/')
-mlflow.set_experiment(experiment_id=149163670756483050)
+mlflow.set_experiment(experiment_id=194767319095067766)
 
 # Model Wrapper
 class CornacModelWrapper(mlflow.pyfunc.PythonModel):
@@ -164,7 +164,7 @@ with mlflow.start_run():
 
     # Log as an MLflow PyFunc model
     mlflow.pyfunc.log_model(
-        artifact_path="model",
+        name="model",
         python_model=CornacModelWrapper(),
         artifacts=artifacts
     )

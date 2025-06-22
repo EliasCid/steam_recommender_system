@@ -11,7 +11,7 @@ from cornac.metrics import MAE, RMSE, Precision, Recall, NDCG, AUC, MAP
 from cornac.models.recommender import ScoreException
 
 mlflow.set_tracking_uri('http://127.0.0.1:5000/')
-mlflow.set_experiment(experiment_id=831499984243916305)
+mlflow.set_experiment(experiment_id=755778459630285288)
 
 # Model Wrapper
 class CornacModelWrapper(mlflow.pyfunc.PythonModel):
@@ -96,7 +96,7 @@ class CornacModelWrapper(mlflow.pyfunc.PythonModel):
         return pd.DataFrame({"prediction": out})
 
 # Load dataset
-main_folder = os.path.dirname(os.getcwd())
+main_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 df_folder = os.path.join(main_folder, "3. data_analysis", "db")
 df_files = glob.glob(os.path.join(df_folder, "*.parquet"))
@@ -165,8 +165,10 @@ with mlflow.start_run():
 
     # Log as an MLflow PyFunc model
     mlflow.pyfunc.log_model(
-        artifact_path="model",
+        name="model",
         python_model=CornacModelWrapper(),
         artifacts=artifacts
     )
+
+
 # %%
