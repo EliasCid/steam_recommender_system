@@ -46,12 +46,12 @@ class CornacModelWrapper(mlflow.pyfunc.PythonModel):
         self.item_map = getattr(self.model, "item_map", getattr(self.model, "iid_map", None))
 
     def predict(self, context, model_input):
-        if not {"user_id", "item_id"}.issubset(model_input.columns):
-            raise ValueError("Input must have 'user_id' and 'item_id' columns.")
+        if not {"user_steamid", "game_appid"}.issubset(model_input.columns):
+            raise ValueError("Input must have 'user_steamid' and 'game_appid' columns.")
 
         out = []
         for _, row in model_input.iterrows():
-            raw_u, raw_i = row["user_id"], row["item_id"]
+            raw_u, raw_i = row["user_steamid"], row["game_appid"]
 
             # Helper to map raw → internal index
             def to_index(raw, mapping):

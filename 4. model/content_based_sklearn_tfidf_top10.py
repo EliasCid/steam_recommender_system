@@ -34,7 +34,7 @@ class ContentBasedRecommender(mlflow.pyfunc.PythonModel):
             sims[i] = -1
 
             # top N
-            top_n = sims.argsort()[-1000:][::-1]
+            top_n = sims.argsort()[-10:][::-1]
             recs = self.df_unique.iloc[top_n].copy()
             recs["similarity_score"] = sims[top_n]
             # tag which input game this block belongs to
@@ -97,7 +97,7 @@ with mlflow.start_run():
     tfidf_matrix = tfidf.fit_transform(df_unique['features_str'])
 
     # Top-N similar items to retrieve   
-    TOP_N = 1000
+    TOP_N = 10
     similar_items = []
 
     # Calculate similarities row by row

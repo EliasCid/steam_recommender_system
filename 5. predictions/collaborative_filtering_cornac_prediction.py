@@ -28,8 +28,6 @@ else:
     print("No parquet files found in the unrated folder.")
 
 unrated_df = df.filter(df["user_steamid"] == user_id)
-unrated_df = unrated_df.withColumnRenamed("user_steamid", "user_id")\
-                         .withColumnRenamed("game_appid", "item_id")
 unrated_df = unrated_df.toPandas()
 
 # Load rated dataset
@@ -43,8 +41,6 @@ else:
     print("No parquet files found in the rated folder.")
 
 rated_df = df.filter(df["user_steamid"] == user_id)
-rated_df = rated_df.withColumnRenamed("user_steamid", "user_id")\
-                    .withColumnRenamed("game_appid", "item_id")
 rated_df = rated_df.toPandas()
 
 # Load games dataset
@@ -57,8 +53,7 @@ if games_df_files:
 else:
     print("No parquet files found in the games folder.")
 
-games_df = df.withColumnRenamed("game_appid", "item_id")
-games_df = games_df.toPandas()
+games_df = df.toPandas()
 
 # Load model
 mlflow.set_tracking_uri('http://127.0.0.1:5000/')
@@ -69,23 +64,23 @@ model = mlflow.pyfunc.load_model(f'models:/collaborative_filtering_cornac/{versi
 # Call predict on Unrated dataset
 predictions_unrated = model.predict(unrated_df)
 predictions_unrated = predictions_unrated.reset_index(drop=True)
-ids = unrated_df[['item_id']].reset_index(drop=True)
+ids = unrated_df[['game_appid']].reset_index(drop=True)
 predictions_unrated = pd.concat([ids, predictions_unrated], axis=1)
 
 # Call predict on Rated dataset
 predictions_rated = model.predict(rated_df)
 predictions_rated = predictions_rated.reset_index(drop=True)
-ids = rated_df[['item_id']].reset_index(drop=True)
+ids = rated_df[['game_appid']].reset_index(drop=True)
 predictions_rated = pd.concat([ids, predictions_rated], axis=1)
 
 # Top results and merge with games_df
-predictions_unrated = pd.merge(predictions_unrated, games_df, on="item_id", how="left")
+predictions_unrated = pd.merge(predictions_unrated, games_df, on="game_appid", how="left")
 predictions_unrated = predictions_unrated.sort_values(by="prediction", ascending=False)
 
-predictions_rated = pd.merge(predictions_rated, games_df, on="item_id", how="left")
+predictions_rated = pd.merge(predictions_rated, games_df, on="game_appid", how="left")
 predictions_rated = predictions_rated.sort_values(by="prediction", ascending=False)
 
-rated_df_filtered = rated_df[['item_id', 'game_name', 'game_playtime_forever', 'rating']].sort_values(by="game_playtime_forever", ascending=False)
+rated_df_filtered = rated_df[['game_appid', 'game_name', 'game_playtime_forever', 'rating']].sort_values(by="game_playtime_forever", ascending=False)
 
 print(predictions_unrated.head(10))
 print(predictions_rated.head(10))
