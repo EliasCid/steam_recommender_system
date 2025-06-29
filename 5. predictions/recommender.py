@@ -2,14 +2,16 @@
 import pandas as pd
 from recommender_system import *
 
-# Define user
-user_id = '76561198147702705'
-#user_id = '76561197960463103'
-#user_id = '76561197960860132'
+# Load users
+users_df = load_dataset.load_users()
+
+# Define users
+#user_ids = users_df["user_steamid"].sample(100).tolist()
+user_ids = ['76561198147702705', '76561197960463103', '76561197960860132']
 
 # Load data
-unrated_df = load_dataset.load_unrated(user_id)
-rated_df = load_dataset.load_rated(user_id)
+unrated_df = load_dataset.load_unrated(user_ids)
+rated_df = load_dataset.load_rated(user_ids)
 games_df = load_dataset.load_games()
 
 # Load models
@@ -34,39 +36,39 @@ cosine_similaraty_weight = similar_items_predictions[['game_appid', 'similarity_
 # Weighted ranking collaborative filtering
 collaborative_filtering_weighted = collaborative_filtering_predictions_unrated.merge(cosine_similaraty_weight, on='game_appid', how='left')
 collaborative_filtering_weighted['weighted_predition'] = collaborative_filtering_weighted['prediction'] * collaborative_filtering_weighted['similarity_score']
-collaborative_filtering_weighted = collaborative_filtering_weighted.sort_values(by='weighted_predition', ascending=False)
+collaborative_filtering_weighted = collaborative_filtering_weighted.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 
 # Weighted ranking content based
 content_based_weighted = content_based_predictions_unrated.merge(cosine_similaraty_weight, on='game_appid', how='left')
 content_based_weighted['weighted_predition'] = content_based_weighted['prediction'] * content_based_weighted['similarity_score']
-content_based_weighted = content_based_weighted.sort_values(by='weighted_predition', ascending=False)
+content_based_weighted = content_based_weighted.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 
 # Weighted ranking collaborative filtering rated
 collaborative_filtering_weighted_rated = collaborative_filtering_predictions_rated.merge(cosine_similaraty_weight, on='game_appid', how='left')
 collaborative_filtering_weighted_rated['weighted_predition'] = collaborative_filtering_weighted_rated['prediction'] * collaborative_filtering_weighted_rated['similarity_score']
-collaborative_filtering_weighted_rated = collaborative_filtering_weighted_rated.sort_values(by='weighted_predition', ascending=False)
+collaborative_filtering_weighted_rated = collaborative_filtering_weighted_rated.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 
 # Weighted ranking content based rated
 content_based_weighted_rated = content_based_predictions_rated.merge(cosine_similaraty_weight, on='game_appid', how='left')
 content_based_weighted_rated['weighted_predition'] = content_based_weighted_rated['prediction'] * content_based_weighted_rated['similarity_score']
-content_based_weighted_rated = content_based_weighted_rated.sort_values(by='weighted_predition', ascending=False)
+content_based_weighted_rated = content_based_weighted_rated.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 
 # Final result
 final_prediction = pd.concat([collaborative_filtering_weighted, content_based_weighted], ignore_index=True)
-final_prediction = final_prediction.sort_values(by='weighted_predition', ascending=False)
+final_prediction = final_prediction.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 final_prediction = final_prediction.drop_duplicates(subset='game_appid', keep='first')
 
 #Final result rated
 final_prediction_rated = pd.concat([collaborative_filtering_weighted_rated, content_based_weighted_rated], ignore_index=True)
-final_prediction_rated = final_prediction_rated.sort_values(by='weighted_predition', ascending=False)
+final_prediction_rated = final_prediction_rated.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 final_prediction_rated = final_prediction_rated.drop_duplicates(subset='game_appid', keep='first')
 
 # Show result
-print(collaborative_filtering_predictions_unrated[['game_appid', 'prediction', 'game_name']].head(10))
-print(content_based_predictions_unrated[['game_appid', 'prediction', 'game_name']].head(10))
-print(final_prediction[['game_appid', 'weighted_predition', 'game_name']].head(10))
+print(collaborative_filtering_predictions_unrated[['user_steamid', 'game_appid', 'prediction', 'game_name']].head(10))
+print(content_based_predictions_unrated[['user_steamid', 'game_appid', 'prediction', 'game_name']].head(10))
+print(final_prediction[['user_steamid', 'game_appid', 'weighted_predition', 'game_name']].head(10))
 
-print(collaborative_filtering_predictions_rated[['game_appid', 'prediction', 'game_name']].head(10))
-print(content_based_predictions_rated[['game_appid', 'prediction', 'game_name']].head(10))
-print(final_prediction_rated[['game_appid', 'weighted_predition', 'game_name']].head(10))
+print(collaborative_filtering_predictions_rated[['user_steamid', 'game_appid', 'prediction', 'game_name']].head(10))
+print(content_based_predictions_rated[['user_steamid', 'game_appid', 'prediction', 'game_name']].head(10))
+print(final_prediction_rated[['user_steamid', 'game_appid', 'weighted_predition', 'game_name']].head(10))
 # %%

@@ -95,7 +95,11 @@ class CornacModelWrapper(mlflow.pyfunc.PythonModel):
 
             out.append(score)
 
-        return pd.DataFrame({"prediction": out})
+        return (
+            model_input[["user_steamid", "game_appid"]]
+            .assign(prediction=out)
+            .reset_index(drop=True)
+        )
 
 # Load dataset
 main_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

@@ -64,14 +64,20 @@ model = mlflow.pyfunc.load_model(f'models:/collaborative_filtering_cornac/{versi
 # Call predict on Unrated dataset
 predictions_unrated = model.predict(unrated_df)
 predictions_unrated = predictions_unrated.reset_index(drop=True)
-ids = unrated_df[['game_appid']].reset_index(drop=True)
-predictions_unrated = pd.concat([ids, predictions_unrated], axis=1)
+predictions_unrated = (
+    predictions_unrated
+    .merge(games_df, on="game_appid", how="left")
+    .sort_values("prediction", ascending=False)
+)
 
 # Call predict on Rated dataset
 predictions_rated = model.predict(rated_df)
 predictions_rated = predictions_rated.reset_index(drop=True)
-ids = rated_df[['game_appid']].reset_index(drop=True)
-predictions_rated = pd.concat([ids, predictions_rated], axis=1)
+predictions_rated = (
+    predictions_rated
+    .merge(games_df, on="game_appid", how="left")
+    .sort_values("prediction", ascending=False)
+)
 
 # Top results and merge with games_df
 predictions_unrated = pd.merge(predictions_unrated, games_df, on="game_appid", how="left")

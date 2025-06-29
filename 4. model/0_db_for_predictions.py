@@ -6,7 +6,7 @@ import datetime
 # 1. Start Spark
 spark = (
     SparkSession.builder
-    .appName("UnratedUserGamePairs")
+    .appName("db_for_predictions")
     .getOrCreate()
 )
 
@@ -20,12 +20,13 @@ latest_file = max(df_files, key=os.path.getctime)
 df = spark.read.parquet(latest_file)
 
 # 3. Select only needed cols
-df_filtered = df.select("user_steamid", "game_appid", "game_name", "game_playtime_forever", "rating")
+df_filtered = df.select("user_steamid", "user_personaname", "game_appid", "game_name", "game_img_url","game_playtime_forever", "rating")
 
 # 4. Distinct users & games
 users = df_filtered.select("user_steamid").distinct()
 games = df_filtered.select("game_appid").distinct()
-games_with_name = df_filtered.select("game_appid", "game_name").distinct()
+games_with_name = df_filtered.select("game_appid", "game_name", "game_img_url").distinct()
+users_with_name = df_filtered.select("user_steamid", "user_personaname").distinct()
 
 # 5. All combos → anti‐join rated
 all_pairs   = users.crossJoin(games)
@@ -47,4 +48,5 @@ now = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S.%f')
 unrated.coalesce(1).write.parquet(f"db/unrated/{now}.parquet")
 df_filtered.coalesce(1).write.parquet(f"db/rated/{now}.parquet")
 games_with_name.coalesce(1).write.parquet(f"db/games/{now}.parquet")
+users_with_name.coalesce(1).write.parquet(f"db/users/{now}.parquet")
 # %%

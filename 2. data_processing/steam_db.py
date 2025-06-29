@@ -118,7 +118,8 @@ filtered_df = merged_users_games_details[[
     "game_detail_publisher",
     "game_detail_genres",
     "game_detail_tags",
-    "game_detail_rating"
+    "game_detail_rating",
+    "game_img_icon_url"
 ]]
 
 save_parquet_filtered(filtered_df)

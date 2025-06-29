@@ -12,8 +12,8 @@ spark = (
     .getOrCreate()
 )
 
-main_folder = os.path.dirname(os.getcwd())
-
+main_folder = os.getcwd()
+#%%
 # Load unrated dataset
 def load_unrated(user_ids):
     unrated_df_folder = os.path.join(main_folder, "4. model", "db", "unrated")
