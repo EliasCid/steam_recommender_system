@@ -41,13 +41,32 @@ content_based_weighted = content_based_predictions_unrated.merge(cosine_similara
 content_based_weighted['weighted_predition'] = content_based_weighted['prediction'] * content_based_weighted['similarity_score']
 content_based_weighted = content_based_weighted.sort_values(by='weighted_predition', ascending=False)
 
+# Weighted ranking collaborative filtering rated
+collaborative_filtering_weighted_rated = collaborative_filtering_predictions_rated.merge(cosine_similaraty_weight, on='game_appid', how='left')
+collaborative_filtering_weighted_rated['weighted_predition'] = collaborative_filtering_weighted_rated['prediction'] * collaborative_filtering_weighted_rated['similarity_score']
+collaborative_filtering_weighted_rated = collaborative_filtering_weighted_rated.sort_values(by='weighted_predition', ascending=False)
+
+# Weighted ranking content based rated
+content_based_weighted_rated = content_based_predictions_rated.merge(cosine_similaraty_weight, on='game_appid', how='left')
+content_based_weighted_rated['weighted_predition'] = content_based_weighted_rated['prediction'] * content_based_weighted_rated['similarity_score']
+content_based_weighted_rated = content_based_weighted_rated.sort_values(by='weighted_predition', ascending=False)
+
 # Final result
 final_prediction = pd.concat([collaborative_filtering_weighted, content_based_weighted], ignore_index=True)
 final_prediction = final_prediction.sort_values(by='weighted_predition', ascending=False)
 final_prediction = final_prediction.drop_duplicates(subset='game_appid', keep='first')
 
+#Final result rated
+final_prediction_rated = pd.concat([collaborative_filtering_weighted_rated, content_based_weighted_rated], ignore_index=True)
+final_prediction_rated = final_prediction_rated.sort_values(by='weighted_predition', ascending=False)
+final_prediction_rated = final_prediction_rated.drop_duplicates(subset='game_appid', keep='first')
+
 # Show result
 print(collaborative_filtering_predictions_unrated[['game_appid', 'prediction', 'game_name']].head(10))
 print(content_based_predictions_unrated[['game_appid', 'prediction', 'game_name']].head(10))
 print(final_prediction[['game_appid', 'weighted_predition', 'game_name']].head(10))
+
+print(collaborative_filtering_predictions_rated[['game_appid', 'prediction', 'game_name']].head(10))
+print(content_based_predictions_rated[['game_appid', 'prediction', 'game_name']].head(10))
+print(final_prediction_rated[['game_appid', 'weighted_predition', 'game_name']].head(10))
 # %%
