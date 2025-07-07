@@ -2,6 +2,11 @@ import streamlit as st
 import pandas as pd
 from recommender_system import *
 
+def apply_weight(df):
+    df = df.merge(cosine_similaraty_weight, on='game_appid', how='left')
+    df['weighted_predition'] = df['prediction'] * df['similarity_score']
+    return df.sort_values(by=['user_steamid', 'weighted_predition'], ascending=[True, False])
+
 # Site configuration
 
 st.set_page_config(
@@ -68,23 +73,19 @@ if user_id_input or user_name_input is not None:
     cosine_similaraty_weight = similar_items_predictions[['game_appid', 'similarity_score']].groupby('game_appid').max().reset_index()
 
     # Weighted ranking collaborative filtering
-    collaborative_filtering_weighted = collaborative_filtering_predictions_unrated.merge(cosine_similaraty_weight, on='game_appid', how='left')
-    collaborative_filtering_weighted['weighted_predition'] = collaborative_filtering_weighted['prediction'] * collaborative_filtering_weighted['similarity_score']
+    collaborative_filtering_weighted = apply_weight(collaborative_filtering_predictions_unrated)
     collaborative_filtering_weighted = collaborative_filtering_weighted.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 
     # Weighted ranking content based
-    content_based_weighted = content_based_predictions_unrated.merge(cosine_similaraty_weight, on='game_appid', how='left')
-    content_based_weighted['weighted_predition'] = content_based_weighted['prediction'] * content_based_weighted['similarity_score']
+    content_based_weighted = apply_weight(content_based_predictions_unrated)
     content_based_weighted = content_based_weighted.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 
     # Weighted ranking collaborative filtering rated
-    collaborative_filtering_weighted_rated = collaborative_filtering_predictions_rated.merge(cosine_similaraty_weight, on='game_appid', how='left')
-    collaborative_filtering_weighted_rated['weighted_predition'] = collaborative_filtering_weighted_rated['prediction'] * collaborative_filtering_weighted_rated['similarity_score']
+    collaborative_filtering_weighted_rated = apply_weight(collaborative_filtering_predictions_rated)
     collaborative_filtering_weighted_rated = collaborative_filtering_weighted_rated.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 
     # Weighted ranking content based rated
-    content_based_weighted_rated = content_based_predictions_rated.merge(cosine_similaraty_weight, on='game_appid', how='left')
-    content_based_weighted_rated['weighted_predition'] = content_based_weighted_rated['prediction'] * content_based_weighted_rated['similarity_score']
+    content_based_weighted_rated = apply_weight(content_based_predictions_rated)
     content_based_weighted_rated = content_based_weighted_rated.sort_values(by=['user_steamid','weighted_predition'], ascending=[True, False])
 
     # Final result
