@@ -7,6 +7,8 @@ import datetime
 spark = (
     SparkSession.builder
     .appName("db_for_predictions")
+    .config("spark.driver.memory", "16g")
+    .config("spark.executor.memory", "16g")
     .getOrCreate()
 )
 
