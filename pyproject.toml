@@ -1,7 +1,7 @@
 [project]
 name = "steam-recommender-system"
 version = "0.1.0"
-description = "Add your description here"
+description = "Steam Recommender System develop by Elas Cid Perez as part of the MBA in Artificial Intelligence and Big Data from Universidade de São Paulo (USP)"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

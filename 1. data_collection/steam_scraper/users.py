@@ -1,18 +1,21 @@
+# This module fetches user data from Steam API
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 
+# Function to fetch friends data using Steam API
 def get_friends_data(api_key, steamid):
-    url = "http://api.steampowered.com/ISteamUser/GetFriendList/v0001/"
+    url = 'http://api.steampowered.com/ISteamUser/GetFriendList/v0001/'
     try:
-        response = requests.get(url, params={"key": api_key, "steamid": steamid, "relationship": "all"}, timeout=5)
+        response = requests.get(url, params={'key': api_key, 'steamid': steamid, 'relationship': 'all'}, timeout=5)
         response.raise_for_status()
         data = response.json()
-        return steamid, data.get("friendslist", {}).get("friends", [])
+        return steamid, data.get('friendslist', {}).get('friends', [])
     except Exception as e:
-        print(f"Error fetching data for {steamid}: {e}")
+        print(f'Error fetching data for {steamid}: {e}')
         return steamid, []
 
+# Function to work in parallel to fetch friends data
 def fetch_friend_data(api_key, initial_steamid, max_unique_ids, max_workers=10):
     unique_ids = set()
     friends_list = []
@@ -39,12 +42,12 @@ def fetch_friend_data(api_key, initial_steamid, max_unique_ids, max_workers=10):
                     pbar.update(1)
 
                     friends_list.append({
-                        "parent_steamid": steamid,
-                        "friendslist": {"friends": friends}
+                        'parent_steamid': steamid,
+                        'friendslist': {'friends': friends}
                     })
 
                     for friend in friends:
-                        if friend["steamid"] not in unique_ids and len(unique_ids) + len(steamid_queue) < max_unique_ids:
-                            steamid_queue.append(friend["steamid"])
+                        if friend['steamid'] not in unique_ids and len(unique_ids) + len(steamid_queue) < max_unique_ids:
+                            steamid_queue.append(friend['steamid'])
 
-    return {"friends_list": friends_list}, list(unique_ids)
+    return {'friends_list': friends_list}, list(unique_ids)

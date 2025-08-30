@@ -1,3 +1,4 @@
+# This Script implements precision at 10 for all users after implementing the hybrid model.
 #%%
 import pandas as pd
 from tqdm import tqdm

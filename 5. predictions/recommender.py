@@ -1,3 +1,4 @@
+# This Script is used to generate recommendations for a given user. Was desigend as a test area for further implementation on Streamlit.
 #%%
 import pandas as pd
 from recommender_system import *
